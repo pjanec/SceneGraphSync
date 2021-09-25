@@ -25,6 +25,18 @@ namespace SceneGraphSync
 			_nm = bm;
 			_nm.OnObjectCreated += HandleNetObjectCreated;
 			_nm.OnObjectDestroyed += HandleNetObjectDestroyed;
+
+			// initialize from existing objects on the network
+
+			foreach( var o in _nm.GetObjecstOfType<Net.Node>() )
+			{
+				HandleNetObjectCreated( o );
+			}
+
+			foreach( var o in _nm.GetObjecstOfType<Net.Component>() )
+			{
+				HandleNetObjectCreated( o );
+			}
 		}
 
 		public void Tick()

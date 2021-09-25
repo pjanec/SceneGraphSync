@@ -22,6 +22,7 @@ namespace Net
 		public string Content;
 	}
 
+	// emulates some kind of network-shared object repository
 	public class Manager
 	{
 		public T CreateObject<T>() where T:Object, new()
@@ -49,6 +50,11 @@ namespace Net
 			{
 				eventAction();
 			}
+		}
+
+		public List<Object> GetObjecstOfType<T>() where T:Object
+		{
+			return new List<Object>();
 		}
 
 
