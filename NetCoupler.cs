@@ -25,8 +25,7 @@ namespace SceneGraphSync
 
 		public TExt Find( TNative nat )
 		{
-			if( nat == null )
-				return null;
+			if( nat == null ) return null;
 
 			if( _nativeToExt.TryGetValue( nat, out var ext ) )
 			{
@@ -37,14 +36,18 @@ namespace SceneGraphSync
 
 		public TNative Find( TExt ext ) 
 		{
-			if( ext == null )
-				return null;
+			if( ext == null ) return null;
 
 			if( _extToNative.TryGetValue( ext, out var nat ) )
 			{
 				return nat;
 			}
 			return null;
+		}
+
+		public IEnumerable<TNative> GetNatives()
+		{
+			return _nativeToExt.Keys;
 		}
 	}
 }

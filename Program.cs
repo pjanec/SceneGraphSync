@@ -50,20 +50,48 @@ namespace SceneGraphSync
 			//n.Sync();
 
 
-			var bm = new Net.Manager();
-			var bf = new NetFactory( bm );
-			var n = bf.CreateNode("1");
+			var nm = new Net.Manager();
+			var adapt = new NetAdaptor( nm );
+			var n1 = adapt.CreateNode("1");
 			//n.Name = "hi!";
-			var o = bf.GetExtNode( n ); 
+			var o1 = adapt.GetNode( n1 ); 
 
-			n.Sync();
-			n.Children = new List<Node>();
-			n.Sync();
-			n.Children = new List<Node>() { bf.CreateNode("2") };
-			n.Sync();
-			o.Children = new List<Net.Node>() { new Net.Node() { Name = "3" } };
-			n.Sync();
+			n1.Sync();
+			n1.Children = new List<Node>();
+			n1.Components.Add( adapt.CreateComponent("C1") );
+			n1.Sync();
+			n1.Children = new List<Node>() { adapt.CreateNode("2") };
+			n1.Sync();
+			o1.Children = new List<Net.Node>() { new Net.Node() { Name = "3" } };
+			n1.Sync();
 
+			// simulate node creation from a network; parented to node "1"
+			var o2 = nm.CreateObject<Net.Node>();
+			o2.Name = "4";
+			o2.Parent = o1;
+			var c2 = nm.CreateObject<Net.Component>();
+			c2.Name = "C2";
+			o2.Components.Add( c2 );
+			Tick(adapt); // fires the net object creation callback - the native object should be created
+			var n2 = adapt.GetNode( o2 ); 
+
+			o1.Components.Clear();
+			Tick(adapt); // component should be missing on n1
+
+		}
+
+		static void Tick(NetAdaptor adapt)
+		{
+			adapt.Tick();
+			while(true)
+			{
+				var ev = adapt.PopEvent();
+				if( ev == null ) break;
+				if( ev is NetAdaptor.EventNodeCreated )	Console.WriteLine($"{ev.GetType().Name} {((NetAdaptor.EventNodeCreated)ev).Node.Name}");
+				if( ev is NetAdaptor.EventNodeDestroyed ) Console.WriteLine($"{ev.GetType().Name} {((NetAdaptor.EventNodeDestroyed)ev).Node.Name}");
+				if( ev is NetAdaptor.EventComponentCreated ) Console.WriteLine($"{ev.GetType().Name} {((NetAdaptor.EventComponentCreated)ev).Component.Name}");
+				if( ev is NetAdaptor.EventComponentDestroyed ) Console.WriteLine($"{ev.GetType().Name} {((NetAdaptor.EventComponentDestroyed)ev).Component.Name}");
+			}
 		}
 	}
 }

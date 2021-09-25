@@ -49,7 +49,7 @@
     <Compile Include="ISyncable.cs" />
     <Compile Include="Net.cs" />
     <Compile Include="NetCoupler.cs" />
-    <Compile Include="NetFactory.cs" />
+    <Compile Include="NetAdaptor.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

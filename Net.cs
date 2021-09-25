@@ -5,7 +5,7 @@ namespace Net
 {
 	public class Object
 	{
-		public UInt32 InstanceId { get; set; }
+		public Guid Uuid;
 	}
 
 	public class Node : Object
@@ -24,19 +24,33 @@ namespace Net
 
 	public class Manager
 	{
-		public T CreateObject<T>( UInt32 id ) where T:Object, new()
+		public T CreateObject<T>() where T:Object, new()
 		{
-			return new T() { InstanceId = id };
+			var o = new T() { Uuid = Guid.NewGuid() };
+			_deferredEvents.Add( () => { if( OnObjectCreated !=null ) OnObjectCreated(o);} );
+			
+			return o;
+		}
+
+		public void DestroyObject( Object o )
+		{
+			if( o == null ) return;
+			_deferredEvents.Add( () => { if( OnObjectDestroyed !=null ) OnObjectDestroyed(o); } );
+		}
+
+		public Action<Object> OnObjectCreated;
+		public Action<Object> OnObjectDestroyed;
+
+		List<Action> _deferredEvents = new List<Action>();
+
+		public void Tick()
+		{
+			foreach( var eventAction in _deferredEvents )
+			{
+				eventAction();
+			}
 		}
 
 
-		public void DestroyObject( Object obj )
-		{
-		}
-
-		//public T FindObject<T>( UInt32 id ) where T:Object
-		//{
-		//	return null;
-		//}
 	}
 }
