@@ -4,20 +4,14 @@ using System.Linq;
 
 namespace SceneGraphSync
 {
-	public class NetAdaptor
+	public class NetAdaptor : Syncables.IManager
 	{
 		Net.Manager _nm;
 
 		NetCoupler<Node, Net.Node> _nodeCoupler = new NetCoupler<Node, Net.Node>();
 		NetCoupler<Component, Net.Component> _componentCoupler = new NetCoupler<Component, Net.Component>();
 
-		public class Event	{}
-		public class EventNodeCreated : Event { public Node Node; }
-		public class EventNodeDestroyed : Event { public Node Node;	}
-		public class EventComponentCreated : Event { public Component Component; }
-		public class EventComponentDestroyed : Event { public Component Component; }
-
-		Queue<Event> _events = new Queue<Event>();
+		Queue<Syncables.Event> _events = new Queue<Syncables.Event>();
 
 
 		public NetAdaptor( Net.Manager bm )
@@ -39,7 +33,7 @@ namespace SceneGraphSync
 			}
 		}
 
-		public void Tick()
+		public void Sync()
 		{
 			// ticks the network
 			_nm.Tick();
@@ -57,14 +51,28 @@ namespace SceneGraphSync
 			}
 		}
 
+		public T Create<T>() where T:Syncables.Syncable
+		{
+			if(typeof(T) == typeof(Node)) return CreateNode() as T;
+			if(typeof(T) == typeof(Component)) return CreateComponent() as T; 
+			return null;
+		}
+
+		public void Destroy<T>(T obj) where T:Syncables.Syncable
+		{
+			if(typeof(T) == typeof(Node)) DestroyNode(obj as Node);
+			if(typeof(T) == typeof(Component)) DestroyComponent(obj as Component); 
+		}
+
+
 		// Read events periodically in order to find out what object was created/destroyed
-		public Event PopEvent()
+		public Syncables.Event PopEvent()
 		{
 			if( _events.Count == 0 ) return null;
 			return _events.Dequeue();
 		}
 
-		void PushEvent( Event ev )
+		void PushEvent( Syncables.Event ev )
 		{
 			_events.Enqueue( ev );
 		}
@@ -113,7 +121,7 @@ namespace SceneGraphSync
 			var o = _nm.CreateObject<Net.Node>();
 			o.Name = name;
 			var n = CreateNode( o );
-			PushEvent( new EventNodeCreated() { Node = n } );
+			PushEvent( new Syncables.EventObjectCreated(n) );
 			return n;
 		}
 
@@ -122,7 +130,7 @@ namespace SceneGraphSync
 			var native = new Node();
 			_nodeCoupler.Add( native, net );
 
-			native.AddSyncer( new Syncables.ExtSyncPrim<string>(
+			native.AddSyncer( new Syncables.PrimSyncer<string>(
 				() => native.Name,
 				( x ) => native.Name = x,
 				() => net.Name,
@@ -130,7 +138,7 @@ namespace SceneGraphSync
 				( x ) => Console.WriteLine( $"Ext chnaged: {x}" )
 			) );
 
-			native.AddSyncer( new Syncables.ExtSyncPrim<Node>(
+			native.AddSyncer( new Syncables.PrimSyncer<Node>(
 				() => native.Parent,
 				( x ) => native.Parent = x,
 				() => GetOrCreateNode( net.Parent ),
@@ -138,7 +146,7 @@ namespace SceneGraphSync
 				( x ) => Console.WriteLine( $"Ext chnaged: {x}" )
 			) );
 
-			native.AddSyncer( new Syncables.ExtSyncList<Node>(
+			native.AddSyncer( new Syncables.ListSyncer<Node>(
 				() => native.Children,
 				( x ) => native.Children = x,
 				() => (from i in net.Children select GetOrCreateNode( i )).ToList(),
@@ -146,7 +154,7 @@ namespace SceneGraphSync
 				( x ) => Console.WriteLine( $"Children Ext chnaged: {String.Join( ",", from i in x select i == null ? "<null>" : i.Name )}" )
 			) );
 
-			native.AddSyncer( new Syncables.ExtSyncList<Component>(
+			native.AddSyncer( new Syncables.ListSyncer<Component>(
 				() => native.Components,
 				( x ) => native.Components = x,
 				() => (from i in net.Components select GetOrCreateComponent(i)).ToList(),
@@ -166,7 +174,7 @@ namespace SceneGraphSync
 			var net = _nodeCoupler.Remove( native );
 			if( net != null ) _nm.DestroyObject( net );
 
-			PushEvent( new EventNodeDestroyed() { Node = native } );
+			PushEvent( new Syncables.EventObjectDestroyed(native) );
 		}
 
 		public Net.Node GetNode( Node native )
@@ -197,7 +205,7 @@ namespace SceneGraphSync
 			var net = _nm.CreateObject<Net.Component>();
 			net.Name = name;
 			var native =  CreateComponent( net );
-			PushEvent( new EventComponentCreated() { Component = native } );
+			PushEvent( new Syncables.EventObjectCreated(native) {} );
 			return native;
 
 		}
@@ -207,7 +215,7 @@ namespace SceneGraphSync
 			var native = new Component();
 			_componentCoupler.Add( native, net );
 
-			native.AddSyncer( new Syncables.ExtSyncPrim<string>(
+			native.AddSyncer( new Syncables.PrimSyncer<string>(
 				() => native.Name,
 				( x ) => native.Name = x,
 				() => net.Name,
@@ -215,7 +223,7 @@ namespace SceneGraphSync
 				( x ) => Console.WriteLine( $"Comp.Name Ext chnaged: {x}" )
 			) );
 
-			native.AddSyncer( new Syncables.ExtSyncPrim<string>(
+			native.AddSyncer( new Syncables.PrimSyncer<string>(
 				() => native.Content,
 				( x ) => native.Content = x,
 				() => net.Content,
@@ -233,7 +241,7 @@ namespace SceneGraphSync
 		{
 			var net = _componentCoupler.Remove( native );
 			if( net != null ) _nm.DestroyObject( net );
-			PushEvent( new EventComponentDestroyed() { Component = native } );
+			PushEvent( new Syncables.EventObjectDestroyed(native) );
 		}
 
 		public Net.Component GetComponent( Component native )

@@ -43,17 +43,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Component.cs" />
-    <Compile Include="ExtSyncList.cs" />
-    <Compile Include="ExtSyncPrim.cs" />
-    <Compile Include="ISyncable.cs" />
-    <Compile Include="Net.cs" />
-    <Compile Include="NetCoupler.cs" />
-    <Compile Include="NetAdaptor.cs" />
-    <Compile Include="Node.cs" />
+    <Compile Include="Native\Component.cs" />
+    <Compile Include="Net\Component.cs" />
+    <Compile Include="Net\Manager.cs" />
+    <Compile Include="Net\Node.cs" />
+    <Compile Include="Syncables\Event.cs" />
+    <Compile Include="Syncables\IListSyncer.cs" />
+    <Compile Include="Syncables\IManager.cs" />
+    <Compile Include="Syncables\IPrimSyncer.cs" />
+    <Compile Include="Syncables\ISyncable.cs" />
+    <Compile Include="Syncables\ListSyncer.cs" />
+    <Compile Include="Syncables\PrimSyncer.cs" />
+    <Compile Include="Net\Object.cs" />
+    <Compile Include="NetAdaptor\NetCoupler.cs" />
+    <Compile Include="NetAdaptor\NetAdaptor.cs" />
+    <Compile Include="Native\Node.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Syncable.cs" />
+    <Compile Include="Syncables\Syncable.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

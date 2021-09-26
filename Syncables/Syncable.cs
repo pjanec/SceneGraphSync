@@ -2,6 +2,7 @@
 
 namespace Syncables
 {
+
 	public class Syncable : ISyncable
 	{
 		protected List<ISyncable> _syncers;
@@ -23,4 +24,5 @@ namespace Syncables
 			}
 		}
 	}
+
 }

@@ -12,5 +12,10 @@ namespace SceneGraphSync
 		{
 			return Object.ReferenceEquals(this, other);
 		}
+
+		public override string ToString()
+		{
+			return $"{Name}";
+		}
 	}
 }

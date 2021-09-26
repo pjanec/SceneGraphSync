@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace Syncables
 {
-	public class ExtSyncList<T> : ISyncList<T>	 where T:IEquatable<T>
+	public class ListSyncer<T> : IListSyncer<T>	 where T:IEquatable<T>
 	{
-		public ExtSyncList( Func<List<T>> readInt, Action<List<T>> writeInt, Func<List<T>> readExt, Action<List<T>> writeExt, Action<List<T>> onExtChanged )
+		public ListSyncer( Func<List<T>> readInt, Action<List<T>> writeInt, Func<List<T>> readExt, Action<List<T>> writeExt, Action<List<T>> onExtChanged )
 		{
 			_readInt = readInt;
 			_writeInt = writeInt;

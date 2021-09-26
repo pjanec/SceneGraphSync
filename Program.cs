@@ -50,47 +50,45 @@ namespace SceneGraphSync
 			//n.Sync();
 
 
-			var nm = new Net.Manager();
-			var adapt = new NetAdaptor( nm );
-			var n1 = adapt.CreateNode("1");
+			var nm = new Net.Manager();	 // network object repository manager
+			var adapt = new NetAdaptor( nm ); // syncer between native and network objects
+			var mgr = adapt as Syncables.IManager; // same but just as generic interface
+			var n1 = mgr.Create<Node>(); n1.Name="1";
 			//n.Name = "hi!";
 			var o1 = adapt.GetNode( n1 ); 
 
 			n1.Sync();
 			n1.Children = new List<Node>();
-			n1.Components.Add( adapt.CreateComponent("C1") );
+			var c1 = mgr.Create<Component>(); c1.Name="C1";
+			n1.Components.Add( c1 );
 			n1.Sync();
-			n1.Children = new List<Node>() { adapt.CreateNode("2") };
+			var n2 = mgr.Create<Node>(); n2.Name = "2";
+			n1.Children = new List<Node>() { n2 };
 			n1.Sync();
-			o1.Children = new List<Net.Node>() { new Net.Node() { Name = "3" } };
+			var o3 = nm.CreateObject<Net.Node>(); o3.Name="3";
+			o1.Children = new List<Net.Node>() { o3 };
 			n1.Sync();
 
 			// simulate node creation from a network; parented to node "1"
-			var o2 = nm.CreateObject<Net.Node>();
-			o2.Name = "4";
-			o2.Parent = o1;
-			var c2 = nm.CreateObject<Net.Component>();
-			c2.Name = "C2";
+			var o2 = nm.CreateObject<Net.Node>(); o2.Name = "4"; o2.Parent = o1;
+			var c2 = nm.CreateObject<Net.Component>(); c2.Name = "C2";
 			o2.Components.Add( c2 );
-			Tick(adapt); // fires the net object creation callback - the native object should be created
-			var n2 = adapt.GetNode( o2 ); 
+			mgr.Sync(); // fires the net object creation callback - the native object should be created
+			var n2_o2 = adapt.GetNode( o2 ); 
 
 			o1.Components.Clear();
-			Tick(adapt); // component should be missing on n1
+			Tick(mgr); // component should be missing on n1
 
 		}
 
-		static void Tick(NetAdaptor adapt)
+		static void Tick(Syncables.IManager syncMgr)
 		{
-			adapt.Tick();
+			syncMgr.Sync();
 			while(true)
 			{
-				var ev = adapt.PopEvent();
+				var ev = syncMgr.PopEvent();
 				if( ev == null ) break;
-				if( ev is NetAdaptor.EventNodeCreated )	Console.WriteLine($"{ev.GetType().Name} {((NetAdaptor.EventNodeCreated)ev).Node.Name}");
-				if( ev is NetAdaptor.EventNodeDestroyed ) Console.WriteLine($"{ev.GetType().Name} {((NetAdaptor.EventNodeDestroyed)ev).Node.Name}");
-				if( ev is NetAdaptor.EventComponentCreated ) Console.WriteLine($"{ev.GetType().Name} {((NetAdaptor.EventComponentCreated)ev).Component.Name}");
-				if( ev is NetAdaptor.EventComponentDestroyed ) Console.WriteLine($"{ev.GetType().Name} {((NetAdaptor.EventComponentDestroyed)ev).Component.Name}");
+				Console.WriteLine($"{ev}");
 			}
 		}
 	}

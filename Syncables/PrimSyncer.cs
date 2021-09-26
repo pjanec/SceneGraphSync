@@ -2,9 +2,9 @@
 
 namespace Syncables
 {
-	public class ExtSyncPrim<T> : ISyncPrim<T>	 where T:IEquatable<T>
+	public class PrimSyncer<T> : IPrimSyncer<T>	 where T:IEquatable<T>
 	{
-		public ExtSyncPrim( Func<T> readInt, Action<T> writeInt, Func<T> readExt, Action<T> writeExt, Action<T> onExtChanged )
+		public PrimSyncer( Func<T> readInt, Action<T> writeInt, Func<T> readExt, Action<T> writeExt, Action<T> onExtChanged )
 		{
 			_readInt = readInt;
 			_writeInt = writeInt;
