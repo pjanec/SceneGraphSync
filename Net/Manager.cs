@@ -6,18 +6,18 @@ namespace Net
 	// emulates some kind of network-shared object repository
 	public class Manager
 	{
-		public T CreateObject<T>() where T:Object, new()
+		public void PublishObject( Object o )
 		{
-			var o = new T() { Uuid = Guid.NewGuid() };
+			o.Uuid = Guid.NewGuid();
 			_deferredEvents.Add( () => { if( OnObjectCreated !=null ) OnObjectCreated(o);} );
-			
-			return o;
+			//if( OnObjectCreated !=null ) OnObjectCreated(o);
 		}
 
-		public void DestroyObject( Object o )
+		public void UnpublishObject( Object o )
 		{
 			if( o == null ) return;
 			_deferredEvents.Add( () => { if( OnObjectDestroyed !=null ) OnObjectDestroyed(o); } );
+			//if( OnObjectDestroyed !=null ) OnObjectDestroyed(o);
 		}
 
 		public Action<Object> OnObjectCreated;

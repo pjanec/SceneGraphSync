@@ -8,5 +8,14 @@ namespace Net
 		public Node Parent;
 		public List<Node> Children = new List<Node>();
 		public List<Component> Components = new List<Component>();
+
+		public Node()
+		{
+		}
+
+		public Node( string name )
+		{
+			Name = name;
+		}
 	}
 }

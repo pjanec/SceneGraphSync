@@ -2,11 +2,9 @@
 {
 	public interface ISyncable
 	{
-		// Reads value from the external source
-		// Compares with the last Set value
-		// What if the change comes from both sources, internal end external? Internal wins...
-		// Fires on change 
-		void Sync(); 
+		// Checks for changes agains last stored value and update if there is a difference.
+		// If forceExt==true then checks just the external source
+		// Otherwise checks forst the internal source and then the external (internal wins if changes on both sources)
+		void Sync( bool forceExt=false ); 
 	}
-
 }

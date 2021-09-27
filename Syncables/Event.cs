@@ -11,27 +11,27 @@
 		}
 
 	}
-	public class EventObjectCreated : EventObject
+	public class EventObjectRegistered : EventObject
 	{
-		public EventObjectCreated( Syncable obj ) : base(obj)
+		public EventObjectRegistered( Syncable obj ) : base(obj)
 		{
 		}
 
 		public override string ToString()
 		{
-			return $"Created {Object.GetType().Name} {Object}";
+			return $"Registered {Object.GetType().Name} {Object}";
 		}
 	}
 
-	public class EventObjectDestroyed : EventObject
+	public class EventObjectUnregistered : EventObject
 	{
-		public EventObjectDestroyed( Syncable obj ) : base(obj)
+		public EventObjectUnregistered( Syncable obj ) : base(obj)
 		{
 		}
 
 		public override string ToString()
 		{
-			return $"Destroyed {Object}";
+			return $"Unregistered {Object}";
 		}
 	}
 

@@ -6,8 +6,10 @@ namespace Syncables
 {
 	public class ListSyncer<T> : IListSyncer<T>	 where T:IEquatable<T>
 	{
-		public ListSyncer( Func<List<T>> readInt, Action<List<T>> writeInt, Func<List<T>> readExt, Action<List<T>> writeExt, Action<List<T>> onExtChanged )
+		public ListSyncer( IManager syncManager, Func<List<T>> readInt, Action<List<T>> writeInt, Func<List<T>> readExt, Action<List<T>> writeExt, Action<List<T>> onExtChanged )
 		{
+			SyncManager = syncManager;
+			
 			_readInt = readInt;
 			_writeInt = writeInt;
 
@@ -19,11 +21,13 @@ namespace Syncables
 		
 		public Action<List<T>> OnExtChanged { get; set; }
 		
-		public void Sync()
+		public IManager SyncManager { get; }
+
+		public void Sync( bool forceExt=false )
 		{
 			// read from internal source
 			var curr = _readInt();
-			if( !Identical( _prev, curr ) )
+			if( !forceExt && !Identical( _prev, curr ) )
 			{
 				// write to ext source
 				_writeExt( curr );

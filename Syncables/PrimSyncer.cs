@@ -4,8 +4,10 @@ namespace Syncables
 {
 	public class PrimSyncer<T> : IPrimSyncer<T>	 where T:IEquatable<T>
 	{
-		public PrimSyncer( Func<T> readInt, Action<T> writeInt, Func<T> readExt, Action<T> writeExt, Action<T> onExtChanged )
+		public PrimSyncer( IManager syncManager, Func<T> readInt, Action<T> writeInt, Func<T> readExt, Action<T> writeExt, Action<T> onExtChanged )
 		{
+			SyncManager = syncManager;
+			
 			_readInt = readInt;
 			_writeInt = writeInt;
 
@@ -16,12 +18,14 @@ namespace Syncables
 		}
 		
 		public Action<T> OnExtChanged { get; set; }
+
+		public IManager SyncManager { get; set; }
 		
-		public void Sync()
+		public void Sync( bool forceExt=false )
 		{
 			// read from internal source
 			var curr = _readInt();
-			if( !Identical( _prev, curr ) )
+			if( !forceExt && !Identical( _prev, curr ) )
 			{
 				// write to ext source
 				_writeExt( curr );

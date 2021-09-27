@@ -52,6 +52,7 @@
     <Compile Include="Syncables\IManager.cs" />
     <Compile Include="Syncables\IPrimSyncer.cs" />
     <Compile Include="Syncables\ISyncable.cs" />
+    <Compile Include="Syncables\ISyncer.cs" />
     <Compile Include="Syncables\ListSyncer.cs" />
     <Compile Include="Syncables\PrimSyncer.cs" />
     <Compile Include="Net\Object.cs" />
