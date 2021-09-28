@@ -47,6 +47,7 @@
     <Compile Include="Net\Component.cs" />
     <Compile Include="Net\Manager.cs" />
     <Compile Include="Net\Node.cs" />
+    <Compile Include="Syncables\Disposable.cs" />
     <Compile Include="Syncables\Event.cs" />
     <Compile Include="Syncables\IListSyncer.cs" />
     <Compile Include="Syncables\IManager.cs" />

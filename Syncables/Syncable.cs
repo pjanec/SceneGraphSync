@@ -3,8 +3,9 @@
 namespace Syncables
 {
 
-	public class Syncable : ISyncable
+	public class Syncable : Disposable, ISyncable
 	{
+
 		protected List<ISyncer> _syncers;
 
 		public void AddSyncer( ISyncer syncer )
